@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import SearchBar from "./SearchBar";
 import ShoppingCartIcon from "./ShoppingCartIcon";
 import WishlistIcon from "./WishlistIcon";
@@ -31,7 +31,7 @@ const Navbar = ({ logoUrl }: { logoUrl?: string }) => {
 
       {/* RIGHT */}
       <div className="flex items-center gap-6">
-        <SearchBar />
+        <Suspense fallback={null}><SearchBar /></Suspense>
 
         <WishlistIcon />
 
