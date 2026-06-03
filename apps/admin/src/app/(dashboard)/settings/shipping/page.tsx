@@ -13,8 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 const ShippingSchema = z.object({
-    defaultFeeVnd: z.coerce.number().min(0, "Phí không được âm"),
-    gramsPerItemUnit: z.coerce.number().min(1, "Phải lớn hơn 0"),
+    defaultFeeVnd: z.number().min(0, "Phí không được âm"),
+    gramsPerItemUnit: z.number().min(1, "Phải lớn hơn 0"),
 });
 type ShippingForm = z.infer<typeof ShippingSchema>;
 
@@ -53,7 +53,7 @@ export default function ShippingSettingsPage() {
                                 <FormLabel className="text-base font-semibold">Phí vận chuyển mặc định (VNĐ)</FormLabel>
                                 <FormControl>
                                     <div className="relative">
-                                        <Input type="number" min={0} {...field} className="pr-16 text-lg font-bold" />
+                                        <Input type="number" min={0} {...field} onChange={e => field.onChange(e.target.valueAsNumber)} className="pr-16 text-lg font-bold" />
                                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 text-sm">VNĐ</span>
                                     </div>
                                 </FormControl>
@@ -67,7 +67,7 @@ export default function ShippingSettingsPage() {
                                 <FormLabel className="text-base font-semibold">Khối lượng ước tính / sản phẩm (gram)</FormLabel>
                                 <FormControl>
                                     <div className="relative">
-                                        <Input type="number" min={1} {...field} className="pr-16" />
+                                        <Input type="number" min={1} {...field} onChange={e => field.onChange(e.target.valueAsNumber)} className="pr-16" />
                                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 text-sm">gram</span>
                                     </div>
                                 </FormControl>
