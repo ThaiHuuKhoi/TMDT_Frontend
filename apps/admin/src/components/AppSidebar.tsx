@@ -16,6 +16,7 @@ import {
   Store,
   LayoutTemplate,
   FileText,
+  ShieldCheck,
 } from "lucide-react";
 import {
   Sidebar,
@@ -289,6 +290,14 @@ const AppSidebar = () => {
                   <Link href="/info-pages">
                     <FileText className="w-4 h-4" />
                     <span>Trang Thông Tin</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === "/settings/security"}>
+                  <Link href="/settings/security">
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>Bảo Mật</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

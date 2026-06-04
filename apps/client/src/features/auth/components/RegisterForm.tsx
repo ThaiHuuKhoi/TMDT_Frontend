@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
-import publicApi from '@/lib/api/publicClient';
 import { useAuthStore } from '@/features/auth/store';
 
 const OTP_LENGTH = 6;
@@ -66,20 +65,30 @@ export default function RegisterForm() {
         setLoading(true);
 
         try {
-            await publicApi.post('/auth/register', {
-                name: formData.name,
-                email: formData.email,
-                password: formData.password,
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password,
+                }),
             });
-            setOtpSent(true);
-            setResendCountdown(60);
-            setMessage('Mã OTP đã được gửi đến email của bạn. Vui lòng nhập mã để hoàn tất đăng ký.');
-        } catch (err: any) {
-            const msg =
-                typeof err.response?.data === 'string'
-                    ? err.response.data
-                    : err.response?.data?.message || 'Đăng ký thất bại. Vui lòng thử lại.';
-            setError(msg);
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                setError(data.message || 'Đăng ký thất bại. Vui lòng thử lại.');
+                return;
+            }
+            if (data.requiresOtp) {
+                setOtpSent(true);
+                setResendCountdown(60);
+                setMessage(data.message || 'Mã OTP đã được gửi đến email của bạn. Vui lòng nhập mã để hoàn tất đăng ký.');
+            } else {
+                await login();
+                router.push('/');
+            }
+        } catch {
+            setError('Đăng ký thất bại. Vui lòng thử lại.');
         } finally {
             setLoading(false);
         }
@@ -126,20 +135,25 @@ export default function RegisterForm() {
         setMessage('');
         setLoading(true);
         try {
-            await publicApi.post('/auth/register', {
-                name: formData.name,
-                email: formData.email,
-                password: formData.password,
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password,
+                }),
             });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                setError(data.message || 'Không thể gửi lại OTP. Vui lòng thử lại.');
+                return;
+            }
             setResendCountdown(60);
             setOtpDigits(emptyOtpDigits());
             setMessage('Đã gửi lại OTP mới. Vui lòng kiểm tra email của bạn.');
-        } catch (err: any) {
-            const msg =
-                typeof err.response?.data === 'string'
-                    ? err.response.data
-                    : err.response?.data?.message || 'Không thể gửi lại OTP. Vui lòng thử lại.';
-            setError(msg);
+        } catch {
+            setError('Không thể gửi lại OTP. Vui lòng thử lại.');
         } finally {
             setLoading(false);
         }
@@ -344,4 +358,3 @@ export default function RegisterForm() {
         </div>
     );
 }
-
